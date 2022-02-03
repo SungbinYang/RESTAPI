@@ -2,3 +2,4 @@
 
 - REST API
 - Event REST API
+- Events API 사용 예제
