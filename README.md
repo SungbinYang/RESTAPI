@@ -5,3 +5,4 @@
 - Events API 사용 예제
 - 스프링 부트 프로젝트 만들기
 - Event 생성 API 구현: Event 도메인 구현
+- Event 생성 API 구현: 비즈니스 로직
