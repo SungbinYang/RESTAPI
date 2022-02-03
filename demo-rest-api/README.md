@@ -116,3 +116,53 @@
   * 자동 설정 (@EnableAutoConfiguration)
   * 내장 웹 서버 (의존성과 자동 설정의 일부)
   * 독립적으로 실행 가능한 JAR (pom.xml의 플러그인)
+
+## Event 생성 API 구현: Event 도메인 구현
+
+```java
+public class Event {
+
+  private String name;
+  private String description;
+  private LocalDateTime beginEnrollmentDateTime;
+  private LocalDateTime closeEnrollmentDateTime;
+  private LocalDateTime beginEventDateTime;
+  private LocalDateTime endEventDateTime;
+  private String location; // (optional) 이게 없으면 온라인 모임
+  private int basePrice; // (optional)
+  private int maxPrice; // (optional)
+  private int limitOfEnrollment;
+
+}
+```
+
+- 추가 필드
+
+  ```java
+      private Integer id;
+      private boolean offline;
+      private boolean free;
+      private EventStatus eventStatus = EventStatus.DRAFT;
+  ```
+
+- EventStatus 이늄 추가
+
+```java
+public enum EventStatus {
+    DRAFT, PUBLISHED, BEGAN_ENROLLMEND, CLOSED_ENROLLMENT, STARTED, ENDED
+}
+```
+
+롬복 애노테이션 추가
+
+```java
+@Getter @Setter @EqualsAndHashCode(of = "id")
+@Builder @NoArgsConstructor @AllArgsConstructor
+public class Event {}
+```
+
+  * 왜 @EqualsAndHasCode에서 of를 사용하는가 : 엔티티 연관관계 맵핑할때 StackOverflow 방지
+  * 왜 @Builder를 사용할 때 @AllArgsConstructor가 필요한가 : 빌더에서 @AllArgsConstructor를 만들어줘서
+  * @Data를 쓰지 않는 이유 : 1번과 동일
+  * 애노테이션 줄일 수 없나 : 롬복은 메타 애노테이션이 아니기 때문에 줄일수 없다.
+
