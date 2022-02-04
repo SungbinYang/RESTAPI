@@ -26,6 +26,9 @@ class EventTest {
                 .description("rest api development with spring")
                 .build();
         assertNotNull(event);
+
+        assertEquals("rest api",event.getName());
+        assertEquals("rest api development with spring", event.getDescription());
     }
 
     @Test
