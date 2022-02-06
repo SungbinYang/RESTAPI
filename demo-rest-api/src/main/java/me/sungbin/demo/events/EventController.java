@@ -1,5 +1,16 @@
 package me.sungbin.demo.events;
 
+import org.springframework.hateoas.MediaTypes;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.net.URI;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+
 /**
  * packageName : me.sungbin.demo.events
  * fileName : EventController
@@ -12,5 +23,15 @@ package me.sungbin.demo.events;
  * 2022/02/06       rovert         최초 생성
  */
 
+@RestController
+@RequestMapping(value = "/api/events", produces = MediaTypes.HAL_JSON_VALUE)
 public class EventController {
+
+    @PostMapping
+    public ResponseEntity createEvent(@RequestBody Event event) {
+        URI createdUri = linkTo(EventController.class).slash("{id}").toUri();
+        event.setId(10);
+
+        return ResponseEntity.created(createdUri).body(event);
+    }
 }

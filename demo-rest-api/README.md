@@ -230,3 +230,18 @@ public class Event {}
     * 응답 문서화
     * 링크 문서화
     * profile 링크 추가
+
+## Event 생성 API 구현: 201 응답 받기
+- @RestController
+  * @ResponseBody를 모든 메소드에 적용한 것과 동일하다.
+- ResponseEntity를 사용하는 이유
+  * 응답 코드, 헤더, 본문 모두 다루기 편한 API
+- Location URI 만들기
+  * HATEOS가 제공하는 linkTo(), methodOn() 사용
+- 객체를 JSON으로 변환
+  * ObjectMapper 사용
+- 테스트 할 것
+
+> 입력값들을 전달하면 JSON 응답으로 201이 나오는지 확인. <br>
+> Location 헤더에 생성된 이벤트를 조회할 수 있는 URI 담겨 있는지 확인. <br>
+> id는 DB에 들어갈 때 자동생성된 값으로 나오는지 확인
