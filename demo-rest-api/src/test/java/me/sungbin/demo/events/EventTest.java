@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.*;
  * 2022/02/03       rovert         최초 생성
  */
 
-
 class EventTest {
 
     @Test
