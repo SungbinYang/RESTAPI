@@ -1,33 +1,29 @@
 package me.sungbin.demo.events;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 
 /**
  * packageName : me.sungbin.demo.events
- * fileName : Event
+ * fileName : EventDto
  * author : rovert
- * date : 2022/02/03
+ * date : 2022/02/06
  * description :
  * ===========================================================
  * DATE 			AUTHOR			 NOTE
  * -----------------------------------------------------------
- * 2022/02/03       rovert         최초 생성
+ * 2022/02/06       rovert         최초 생성
  */
 
-@Entity
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
-@EqualsAndHashCode(of = "id")
-public class Event {
-
-    @Id @GeneratedValue
-    private Integer id;
+@AllArgsConstructor
+@Data
+public class EventDto {
 
     private String name;
 
@@ -48,11 +44,4 @@ public class Event {
     private int maxPrice; // (optional)
 
     private int limitOfEnrollment;
-
-    private boolean offLine;
-
-    private boolean free;
-
-    @Enumerated(EnumType.STRING)
-    private EventStatus eventStatus = EventStatus.DRAFT;
 }
