@@ -1,7 +1,16 @@
 package me.sungbin.demo.events;
 
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.runner.RunWith;
+
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,7 +26,27 @@ import static org.junit.jupiter.api.Assertions.*;
  * 2022/02/03       rovert         최초 생성
  */
 
+@RunWith(JUnitParamsRunner.class)
 class EventTest {
+
+    // 무료인지 아닌지 확인용 junit 파라미터 테스트
+    private static Stream<Arguments> paramsForTestFree() {
+        return Stream.of(
+                Arguments.of(0, 0, true),
+                Arguments.of(100, 0, false),
+                Arguments.of(0, 100, false),
+                Arguments.of(100, 200, false)
+        );
+    }
+
+    // 오프라인인지 아닌지 확인하는 파라미터 테스트
+    private static Stream<Arguments> paramsForTestOffLine() {
+        return Stream.of(
+                Arguments.of("강남", true),
+                Arguments.of("", false),
+                Arguments.of(null, false)
+        );
+    }
 
     @Test
     void builder() {
@@ -47,67 +76,36 @@ class EventTest {
         assertEquals(description, event.getDescription());
     }
 
-    @Test
+    @ParameterizedTest
+    @MethodSource("paramsForTestFree")
     @DisplayName("이벤트가 공짜인지 아닌지 여부를 확인하는 테스트")
-    void testFree() {
+    void testFree(int basePrice, int maxPrice, boolean isFree) {
         // Given
         Event event = Event.builder()
-                .basePrice(0)
-                .maxPrice(0)
+                .basePrice(basePrice)
+                .maxPrice(maxPrice)
                 .build();
 
         // When
         event.update();
 
         // Then
-        assertTrue(event.isFree());
-
-        // Given
-        event = Event.builder()
-                .basePrice(100)
-                .maxPrice(0)
-                .build();
-
-        // When
-        event.update();
-
-        // Then
-        assertFalse(event.isFree());
-
-        // Given
-        event = Event.builder()
-                .basePrice(0)
-                .maxPrice(100)
-                .build();
-
-        // When
-        event.update();
-
-        // Then
-        assertFalse(event.isFree());
+        assertEquals(isFree, event.isFree());
     }
 
-    @Test
+    @ParameterizedTest
+    @MethodSource("paramsForTestOffLine")
     @DisplayName("온라인이니지 오프라인인지 확인하는 테스트")
-    void testOffLine() {
+    void testOffLine(String location, boolean isOffLine) {
         // Given
         Event event = Event.builder()
-                .location("강남역 토즈")
+                .location(location)
                 .build();
 
         // When
         event.update();
 
         // Then
-        assertTrue(event.isOffLine());
-
-        // Given
-        event = Event.builder().build();
-
-        // When
-        event.update();
-
-        // Then
-        assertFalse(event.isOffLine());
+        assertEquals(isOffLine, event.isOffLine());
     }
 }

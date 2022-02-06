@@ -331,3 +331,20 @@ public class Event {}
 
 > 비즈니스 로직 적용 됐는지 응답 메시지 확인 <br>
 > offline과 free 값 확인
+
+## Event 생성 API 구현: 매개변수를 이용한 테스트
+- 테스트 코드 리팩토링
+  * 테스트에서 중복 코드 제거
+  * 매개변수만 바꿀 수 있으면 좋겠는데?
+  * JUnitParams
+- JUnitParams
+  * https://github.com/Pragmatists/JUnitParams
+
+  ```xml
+  <dependency>
+      <groupId>pl.pragmatists</groupId>
+      <artifactId>JUnitParams</artifactId>
+      <version>1.1.1</version>
+      <scope>test</scope>
+  </dependency>
+  ```

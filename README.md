@@ -17,3 +17,4 @@
 - Event 생성 API 구현: Bad Request 처리하기
 - Event 생성 API 구현: Bad Request 응답 본문 만들기
 - Event 생성 API 구현: 비즈니스 로직 적용
+- Event 생성 API 구현: 매개변수를 이용한 테스트
