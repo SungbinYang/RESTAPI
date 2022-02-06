@@ -2,6 +2,7 @@ package me.sungbin.demo.events;
 
 import lombok.*;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 /**
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
  * 2022/02/03       rovert         최초 생성
  */
 
+@Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,6 +26,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(of = "id")
 public class Event {
 
+    @Id @GeneratedValue
     private Integer id;
 
     private String name;
@@ -50,5 +53,6 @@ public class Event {
 
     private boolean free;
 
+    @Enumerated(EnumType.STRING)
     private EventStatus eventStatus;
 }
