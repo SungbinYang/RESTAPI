@@ -405,3 +405,43 @@ public class Event {}
     * ...
 - Constraint
   * https://github.com/spring-projects/spring-restdocs/blob/v2.0.2.RELEASE/samples/rest-notes-spring-hateoas/src/test/java/com/example/notes/ApiDocumentation.java
+
+## 스프링 REST Docs 적용
+- REST Docs 자동 설정
+  * @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
+
+  ```java
+      @BeforeEach
+      void setup(RestDocumentationContextProvider restDocumentationContextProvider) {
+          this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
+                  .addFilter(new CharacterEncodingFilter("UTF-8", true)) // 필터 추가
+                  .apply(documentationConfiguration(restDocumentationContextProvider))
+                  .alwaysDo(print())
+                  .build();
+      }
+  ```
+
+- RestDocMockMvc 커스터마이징
+
+```java
+      @BeforeEach
+      void setup(RestDocumentationContextProvider restDocumentationContextProvider) {
+          this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
+                  .addFilter(new CharacterEncodingFilter("UTF-8", true)) // 필터 추가
+                  .apply(documentationConfiguration(restDocumentationContextProvider)
+                          .operationPreprocessors()
+                          .withRequestDefaults(modifyUris().host("sungbin.me").removePort(), prettyPrint())
+                          .withResponseDefaults(modifyUris().host("sungbin.me").removePort(), prettyPrint()))
+                  .alwaysDo(print())
+                  .build();
+      }
+```
+
+- 테스트 할 것
+
+> API 문서 만들기 <br>
+> 요청 본문 문서화 <br>
+> 응답 본문 문서화 <br>
+> 링크 문서화 <br>
+> profile 링크 추가 <br>
+> 응답 헤더 문서화 <br>
