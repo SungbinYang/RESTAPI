@@ -369,3 +369,15 @@ public class Event {}
       * query-events
 
 ![](./img03.png)
+
+## 스프링 HATEOAS 적용
+- EventResource 만들기
+  * extends RepresentationModel&lt;T&gt;의 문제
+    * @JsonUnwrapped로 해결
+    * extends EntityModel&lt;T&gt;
+- 테스트 할 것
+
+> 응답에 HATEOA와 profile 관련 링크가 있는지 확인. <br>
+> self (view) <br>
+> update (만든 사람은 수정할 수 있으니까) <br>
+> events (목록으로 가는 링크) <br>
