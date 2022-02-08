@@ -25,3 +25,4 @@
 - 스프링 HATEOAS 적용
 - 스프링 REST Docs 소개
 - 스프링 REST Docs 적용
+- 스프링 REST Docs: 링크, (Req, Res) 필드와 헤더 문서화

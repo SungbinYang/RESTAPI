@@ -445,3 +445,25 @@ public class Event {}
 > 링크 문서화 <br>
 > profile 링크 추가 <br>
 > 응답 헤더 문서화 <br>
+
+## 스프링 REST Docs: 링크, (Req, Res) 필드와 헤더 문서화
+- 요청 필드 문서화
+  * requestFields() + fieldWithPath()
+  * responseFields() + fieldWithPath()
+  * requestHeaders() + headerWithName()
+  * responseHedaers() + headerWithName()
+  * links() + linkWithRel()
+- 테스트 할 것
+
+> API 문서 만들기 <br>
+> 요청 본문 문서화 <br>
+> 응답 본문 문서화 <br>
+> 링크 문서화 <br>
+> self <br>
+> query-events <br>
+> update-event <br>
+> profile 링크 추가 <br>
+> 요청 헤더 문서화 <br>
+> 요청 필드 문서화 <br>
+> 응답 헤더 문서화 <br>
+> 응답 필드 문서화 <br>
