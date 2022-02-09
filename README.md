@@ -28,3 +28,4 @@
 - 스프링 REST Docs: 링크, (Req, Res) 필드와 헤더 문서화
 - 스프링 REST Docs: 문서 빌드
 - PostgreSQL 적용
+- API 인덱스 만들기

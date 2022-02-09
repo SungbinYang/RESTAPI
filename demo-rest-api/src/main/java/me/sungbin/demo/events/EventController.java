@@ -2,6 +2,7 @@ package me.sungbin.demo.events;
 
 import lombok.RequiredArgsConstructor;
 import me.sungbin.demo.App;
+import me.sungbin.demo.common.ErrorsResource;
 import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
@@ -44,13 +45,13 @@ public class EventController {
     @PostMapping
     public ResponseEntity createEvent(@RequestBody @Valid EventDto eventDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(bindingResult);
+            return badRequest(bindingResult);
         }
 
         eventValidator.validate(eventDto, bindingResult);
 
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(bindingResult);
+            return badRequest(bindingResult);
         }
 
         Event event = modelMapper.map(eventDto, Event.class);
@@ -64,5 +65,9 @@ public class EventController {
         eventResource.add(selfLinkBuilder.withRel("update-event"));
         eventResource.add(linkTo(App.class).slash("docs/index.html#resources-events-create").withRel("profile"));
         return ResponseEntity.created(createdUri).body(eventResource);
+    }
+
+    private ResponseEntity<ErrorsResource> badRequest(BindingResult bindingResult) {
+        return ResponseEntity.badRequest().body(new ErrorsResource(bindingResult));
     }
 }
