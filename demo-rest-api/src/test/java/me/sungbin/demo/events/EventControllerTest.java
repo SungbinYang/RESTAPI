@@ -14,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -22,15 +23,18 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 import java.time.LocalDateTime;
+import java.util.stream.IntStream;
 
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
-import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
-import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -58,6 +62,9 @@ class EventControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private EventRepository eventRepository;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -226,5 +233,84 @@ class EventControllerTest {
                 .andExpect(jsonPath("errors[0].defaultMessage").exists())
                 .andExpect(jsonPath("errors[0].codes").exists())
                 .andExpect(jsonPath("_links.index").exists());
+    }
+
+    @Test
+    @DisplayName("30개의 이벤트를 10개씩 두번째 페이지 조회하기")
+    @TestDescription("30개의 이벤트를 10개씩 두번째 페이지 조회하기")
+    public void queryEvents() throws Exception {
+        // given
+        IntStream.range(0, 30).forEach(this::generateEvent);
+
+        // when
+        this.mockMvc.perform(get("/api/events")
+                        .param("page", "1")
+                        .param("size", "10")
+                        .param("sort", "name,DESC"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("page").exists())
+                .andExpect(jsonPath("_embedded.eventList[0]._links.self").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.first").exists())
+                .andExpect(jsonPath("_links.prev").exists())
+                .andExpect(jsonPath("_links.next").exists())
+                .andExpect(jsonPath("_links.last").exists())
+                .andExpect(jsonPath("_links.profile").exists())
+                .andExpect(jsonPath("page.size").exists())
+                .andExpect(jsonPath("page.totalElements").exists())
+                .andExpect(jsonPath("page.totalPages").exists())
+                .andExpect(jsonPath("page.number").exists())
+                .andDo(document("query-events",
+                        links(
+                                linkWithRel("profile").description("Link to profile"),
+                                linkWithRel("self").description("Link to self"),
+                                linkWithRel("first").description("Link to get an event"),
+                                linkWithRel("next").description("Link to next page"),
+                                linkWithRel("last").description("Link to last page"),
+                                linkWithRel("prev").description("Link to prev page")
+                        ),
+                        requestParameters(
+                                parameterWithName("page").description("page to retrieve, begin with and default is 0").optional(),
+                                parameterWithName("size").description("Size of the page to retrieve, default 10").optional(),
+                                parameterWithName("sort").description("How to sort elements by some criteria").optional()
+                        ),
+                        responseFields(
+                                fieldWithPath("_embedded.eventList[0].id").description("identifier of new event"),
+                                fieldWithPath("_embedded.eventList[0].name").description("name of new event"),
+                                fieldWithPath("_embedded.eventList[0].description").description("description of new event"),
+                                fieldWithPath("_embedded.eventList[0].beginEnrollmentDateTime").description("date time of begin of new event"),
+                                fieldWithPath("_embedded.eventList[0].closeEnrollmentDateTime").description("date time of close of new event"),
+                                fieldWithPath("_embedded.eventList[0].beginEventDateTime").description("date time of start of new event"),
+                                fieldWithPath("_embedded.eventList[0].endEventDateTime").description("date time of end of new event"),
+                                fieldWithPath("_embedded.eventList[0].location").description("location of new event"),
+                                fieldWithPath("_embedded.eventList[0].basePrice").description("basePrice of new event"),
+                                fieldWithPath("_embedded.eventList[0].maxPrice").description("maxPrice of new event"),
+                                fieldWithPath("_embedded.eventList[0].limitOfEnrollment").description("limitOfEnrollment of new event"),
+                                fieldWithPath("_embedded.eventList[0].offLine").description("it tells if this event is offLine event or not"),
+                                fieldWithPath("_embedded.eventList[0].free").description("it tells if this event is free or not"),
+                                fieldWithPath("_embedded.eventList[0].eventStatus").description("event status"),
+                                fieldWithPath("_embedded.eventList[0]._links.self.href").description("each event link"),
+                                fieldWithPath("_links.first.href").description("link to first"),
+                                fieldWithPath("_links.self.href").description("link to self"),
+                                fieldWithPath("_links.prev.href").description("link to prev"),
+                                fieldWithPath("_links.next.href").description("link to next"),
+                                fieldWithPath("_links.last.href").description("link to last"),
+                                fieldWithPath("_links.profile.href").description("link to api document"),
+                                fieldWithPath("page.number").description("The number of this page."),
+                                fieldWithPath("page.size").description("The size of this page."),
+                                fieldWithPath("page.totalPages").description("The total number of pages."),
+                                fieldWithPath("page.totalElements").description("The total number of results.")
+                        )
+                ));
+    }
+
+    private void generateEvent(int index) {
+        Event event = Event.builder()
+                .name("event " + index)
+                .description("test event")
+                .build();
+
+        this.eventRepository.save(event);
     }
 }
