@@ -17,6 +17,9 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
@@ -67,6 +70,11 @@ class IndexControllerTest {
         this.mockMvc.perform(get("/api/"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("_links.events").exists());
+                .andExpect(jsonPath("_links.events").exists())
+                .andDo(document("index",
+                        links(
+                                linkWithRel("events").description("The resource event")
+                        )
+                ));
     }
 }

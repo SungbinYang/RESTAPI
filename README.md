@@ -29,4 +29,7 @@
 - 스프링 REST Docs: 문서 빌드
 - PostgreSQL 적용
 - API 인덱스 만들기
+
+## 이벤트 조회 및 수정 REST API 개발
+
 - Event 목록 조회 API
