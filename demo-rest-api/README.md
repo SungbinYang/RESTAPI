@@ -656,3 +656,14 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.H2Dialect
 > profile
 > (create)
 > 문서화
+
+## Event 조회 API
+- 테스트 할 것
+
+> 조회하는 이벤트가 있는 경우 이벤트 리소스 확인
+> 링크
+> self
+> profile
+> (update)
+> 이벤트 데이터
+> 조회하는 이벤트가 없는 경우 404 응답 확인 
