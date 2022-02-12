@@ -4,7 +4,7 @@
 :icons: font
 :source-highlighter: highlightjs
 :toc: left
-:toclevels: 4
+:toclevels: 5
 :sectlinks:
 :operation-curl-request-title: Example request
 :operation-http-response-title: Example response
@@ -118,7 +118,11 @@ operation::create-event[snippets='request-fields,curl-request,http-request,reque
 
 `Get` 요청을 사용해서 기존 이벤트 하나를 조회할 수 있다.
 
-operation::get-event[snippets='request-fields,curl-request,http-response,links']
+operation::get-event[snippets='response-fields,curl-request,http-response,links']
+
+`Get` 요청을 사용해서 기존 이벤트 조회를 실패
+
+operation::get-event-fail[snippets='curl-request,http-response']
 
 [[resources-events-update]]
 === 이벤트 수정

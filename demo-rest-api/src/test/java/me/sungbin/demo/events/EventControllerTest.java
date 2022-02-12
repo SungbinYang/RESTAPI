@@ -14,7 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,14 +26,14 @@ import java.time.LocalDateTime;
 import java.util.stream.IntStream;
 
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
-import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.*;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -238,7 +238,7 @@ class EventControllerTest {
     @Test
     @DisplayName("30개의 이벤트를 10개씩 두번째 페이지 조회하기")
     @TestDescription("30개의 이벤트를 10개씩 두번째 페이지 조회하기")
-    public void queryEvents() throws Exception {
+    void queryEvents() throws Exception {
         // given
         IntStream.range(0, 30).forEach(this::generateEvent);
 
@@ -305,12 +305,74 @@ class EventControllerTest {
                 ));
     }
 
-    private void generateEvent(int index) {
+    @Test
+    @DisplayName("기존에 이벤트를 하나 조회하기")
+    @TestDescription("기존에 이벤트를 하나 조회하기")
+    void getEvent() throws Exception {
+        // Given
+        Event event = this.generateEvent(100);
+
+        // when & Then
+        this.mockMvc.perform(RestDocumentationRequestBuilders.get("/api/events/{id}", event.getId()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("name").exists())
+                .andExpect(jsonPath("id").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.profile").exists())
+                .andDo(document("get-event",
+                        links(
+                                linkWithRel("self").description("link to this event."),
+                                linkWithRel("profile").description("link to profile.")
+                        ),
+                        pathParameters(
+                                parameterWithName("id").description("identifier of an Event.")
+                        ),
+                        responseFields(
+                                fieldWithPath("id").description("identifier of new event"),
+                                fieldWithPath("name").description("name of new event"),
+                                fieldWithPath("description").description("description of new event"),
+                                fieldWithPath("beginEnrollmentDateTime").description("date time of begin of new event"),
+                                fieldWithPath("closeEnrollmentDateTime").description("date time of close of new event"),
+                                fieldWithPath("beginEventDateTime").description("date time of start of new event"),
+                                fieldWithPath("endEventDateTime").description("date time of end of new event"),
+                                fieldWithPath("location").description("location of new event"),
+                                fieldWithPath("basePrice").description("basePrice of new event"),
+                                fieldWithPath("maxPrice").description("maxPrice of new event"),
+                                fieldWithPath("limitOfEnrollment").description("limitOfEnrollment of new event"),
+                                fieldWithPath("offLine").description("it tells if this event is offLine event or not"),
+                                fieldWithPath("free").description("it tells if this event is free or not"),
+                                fieldWithPath("eventStatus").description("event status"),
+                                fieldWithPath("_links.self.href").description("each event link"),
+                                fieldWithPath("_links.profile.href").description("each api document event link")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("없는 이벤트를 조회했을 때 404응답 받기")
+    @TestDescription("없는 이벤트를 조회했을 때 404응답 받기")
+    void getEvent404() throws Exception {
+        // Given
+        int noneExistingId = 1;
+
+        // when & Then
+        this.mockMvc.perform(RestDocumentationRequestBuilders.get("/api/event/{id}", noneExistingId))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andDo(document("get-event-fail",
+                        pathParameters(
+                                parameterWithName("id").description("identifier of an Event.")
+                        )
+                ));
+    }
+
+    private Event generateEvent(int index) {
         Event event = Event.builder()
                 .name("event " + index)
                 .description("test event")
                 .build();
 
-        this.eventRepository.save(event);
+        return this.eventRepository.save(event);
     }
 }
