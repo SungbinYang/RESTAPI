@@ -679,3 +679,8 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.H2Dialect
 > 200 OK
 > 링크
 > 수정한 이벤트 데이터
+
+## 테스트 코드 리팩토링
+- 여러 컨트롤러 간의 중복 코드 제거하기
+  * 클래스 상속을 사용하는 방법
+  * @Disabled 애노테이션으로 테스트로 간주되지 않도록 설정

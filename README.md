@@ -35,3 +35,4 @@
 - Event 목록 조회 API
 - Event 조회 API
 - Events 수정 API
+- 테스트 코드 리팩토링
