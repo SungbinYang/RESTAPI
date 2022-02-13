@@ -52,16 +52,4 @@ public class BaseControllerTest {
 
     @Autowired
     protected WebApplicationContext webApplicationContext;
-
-    @BeforeEach
-    protected void setup(RestDocumentationContextProvider restDocumentationContextProvider) {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-                .addFilter(new CharacterEncodingFilter("UTF-8", true)) // 필터 추가
-                .apply(documentationConfiguration(restDocumentationContextProvider)
-                        .operationPreprocessors()
-                        .withRequestDefaults(modifyUris().host("sungbin.me").removePort(), prettyPrint())
-                        .withResponseDefaults(modifyUris().host("sungbin.me").removePort(), prettyPrint()))
-                .alwaysDo(print())
-                .build();
-    }
 }
