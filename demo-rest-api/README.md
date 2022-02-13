@@ -737,3 +737,37 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.H2Dialect
 - assertThrows()
   * 예외 타입 및 메세지 모두 확인 가능
   * junit4에서는 @Rule과 ExpectedException 사용
+
+## 스프링 시큐리티 기본 설정
+- 시큐리티 필터를 적용하기 않음...
+  * /docs/index.html
+- 로그인 없이 접근 가능
+  * GET /api/events
+  * GET /api/events/{id}
+- 로그인 해야 접근 가능
+  * 나머지 다...
+  * POST /api/events
+  * PUT /api/events/{id}
+  * ...
+- 스프링 시큐리티 OAuth 2.0
+  * AuthorizationServer: OAuth2 토큰 발행(/oauth/token) 및 토큰 인증(/oauth/authorize)
+    * Oder 0 (리소스 서버 보다 우선 순위가 높다.)
+  * ResourceServer: 리소스 요청 인증 처리 (OAuth 2 토큰 검사)
+    * Oder 3 (이 값은 현재 고칠 수 없음)
+- 스프링 시큐리티 설정
+  * @EnableWebSecurity
+  * @EnableGlobalMethodSecurity
+  * extends WebSecurityConfigurerAdapter
+  * PasswordEncoder: PasswordEncoderFactories.createDelegatingPassworkEncoder()
+  * TokenStore: InMemoryTokenStore
+  * AuthenticationManagerBean
+  * configure(AuthenticationManagerBuidler auth)
+    * userDetailsService
+    * passwordEncoder
+  * configure(HttpSecurity http)
+    * /docs/**: permitAll
+  * configure(WebSecurty web)
+    * ignore
+      * /docs/**
+      * /favicon.ico
+  * PathRequest.toStaticResources() 사용하기

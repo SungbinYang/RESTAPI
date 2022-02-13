@@ -115,6 +115,7 @@ class EventControllerTest extends BaseControllerTest {
                                 fieldWithPath("offLine").description("it tells if this event is offLine event or not"),
                                 fieldWithPath("free").description("it tells if this event is free or not"),
                                 fieldWithPath("eventStatus").description("event status"),
+                                fieldWithPath("manager").description("manager of new event"),
                                 fieldWithPath("_links.self.href").description("link to self"),
                                 fieldWithPath("_links.query-events.href").description("link to query event list"),
                                 fieldWithPath("_links.update-event.href").description("link to update existing event"),
@@ -249,6 +250,7 @@ class EventControllerTest extends BaseControllerTest {
                                 fieldWithPath("_embedded.eventList[0].offLine").description("it tells if this event is offLine event or not"),
                                 fieldWithPath("_embedded.eventList[0].free").description("it tells if this event is free or not"),
                                 fieldWithPath("_embedded.eventList[0].eventStatus").description("event status"),
+                                fieldWithPath("_embedded.eventList[0]manager").description("manager of new event"),
                                 fieldWithPath("_embedded.eventList[0]._links.self.href").description("each event link"),
                                 fieldWithPath("_links.first.href").description("link to first"),
                                 fieldWithPath("_links.self.href").description("link to self"),
@@ -301,6 +303,7 @@ class EventControllerTest extends BaseControllerTest {
                                 fieldWithPath("limitOfEnrollment").description("limitOfEnrollment of new event"),
                                 fieldWithPath("offLine").description("it tells if this event is offLine event or not"),
                                 fieldWithPath("free").description("it tells if this event is free or not"),
+                                fieldWithPath("manager").description("manager of new event"),
                                 fieldWithPath("eventStatus").description("event status"),
                                 fieldWithPath("_links.self.href").description("each event link"),
                                 fieldWithPath("_links.profile.href").description("each api document event link")
@@ -377,6 +380,7 @@ class EventControllerTest extends BaseControllerTest {
                                 fieldWithPath("limitOfEnrollment").description("limitOfEnrollment of new event"),
                                 fieldWithPath("offLine").description("it tells if this event is offLine event or not"),
                                 fieldWithPath("free").description("it tells if this event is free or not"),
+                                fieldWithPath("manager").description("manager of new event"),
                                 fieldWithPath("eventStatus").description("event status"),
                                 fieldWithPath("_links.self.href").description("each event link"),
                                 fieldWithPath("_links.profile.href").description("each api document event link")
