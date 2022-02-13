@@ -36,3 +36,7 @@
 - Event 조회 API
 - Events 수정 API
 - 테스트 코드 리팩토링
+
+## REST API 보안 적용
+
+- Account 도메인 추가
