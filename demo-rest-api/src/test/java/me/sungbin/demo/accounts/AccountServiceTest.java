@@ -7,13 +7,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * packageName : me.sungbin.demo.accounts
@@ -35,7 +35,7 @@ class AccountServiceTest {
     private AccountService accountService;
 
     @Autowired
-    private AccountRepository accountRepository;
+    private PasswordEncoder passwordEncoder;
 
     @Test
     @DisplayName("사용자 아이디를 찾는다")
@@ -49,14 +49,14 @@ class AccountServiceTest {
                 .roles(Set.of(AccountRole.ADMIN, AccountRole.USER))
                 .build();
 
-        this.accountRepository.save(account);
+        this.accountService.saveAccount(account);
 
         // When
         UserDetailsService userDetailsService = accountService;
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
         // Then
-        assertEquals(password, userDetails.getPassword());
+        assertTrue(this.passwordEncoder.matches(password, userDetails.getPassword()));
     }
 
     @Test
