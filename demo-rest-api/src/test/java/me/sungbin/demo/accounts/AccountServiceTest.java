@@ -6,11 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * packageName : me.sungbin.demo.accounts
@@ -54,5 +57,17 @@ class AccountServiceTest {
 
         // Then
         assertEquals(password, userDetails.getPassword());
+    }
+
+    @Test
+    @DisplayName("사용자 아이디를 찾는것을 실패")
+    void findByUsernameFail() {
+        String username = "random@email.com";
+
+        Exception exception = assertThrows(UsernameNotFoundException.class, () -> {
+            accountService.loadUserByUsername(username);
+        });
+
+        assertThat(exception.getMessage()).containsSequence(username);
     }
 }

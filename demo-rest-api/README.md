@@ -732,3 +732,8 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.H2Dialect
 
 - 테스트 다 깨짐 (401 Unauthorized)
   * 깨지는 이유는 스프링 부트가 제공하는 스프링 시큐리티 기본 설정 때문.
+
+## 예외 테스트
+- assertThrows()
+  * 예외 타입 및 메세지 모두 확인 가능
+  * junit4에서는 @Rule과 ExpectedException 사용
