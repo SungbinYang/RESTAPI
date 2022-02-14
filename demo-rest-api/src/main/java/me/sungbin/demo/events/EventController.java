@@ -24,7 +24,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 /**
  * packageName : me.sungbin.demo.events
  * fileName : EventController
- * author : rovert
+ * author : rovert0
  * date : 2022/02/06
  * description :
  * ===========================================================
