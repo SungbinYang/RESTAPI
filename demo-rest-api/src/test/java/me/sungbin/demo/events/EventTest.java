@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 
 @RunWith(JUnitParamsRunner.class)
-class EventTest {
+public class EventTest {
 
     @Test
     public void builder() {
