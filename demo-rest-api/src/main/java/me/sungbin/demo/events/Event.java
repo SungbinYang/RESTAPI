@@ -1,7 +1,6 @@
 package me.sungbin.demo.events;
 
 import lombok.*;
-import me.sungbin.demo.accounts.Account;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -57,14 +56,10 @@ public class Event {
     @Enumerated(EnumType.STRING)
     private EventStatus eventStatus = EventStatus.DRAFT;
 
-    @ManyToOne
-    private Account manager;
-
     public void update() {
-        // update free
+        // Update free
         this.free = this.basePrice == 0 && this.maxPrice == 0;
-
-        // update offLine
+        // Update offline
         this.offLine = this.location != null && !this.location.isBlank();
     }
 }

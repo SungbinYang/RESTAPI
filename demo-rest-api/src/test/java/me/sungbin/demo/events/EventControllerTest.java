@@ -2,17 +2,12 @@ package me.sungbin.demo.events;
 
 import me.sungbin.demo.common.BaseControllerTest;
 import me.sungbin.demo.common.TestDescription;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.filter.CharacterEncodingFilter;
 
 import java.time.LocalDateTime;
 import java.util.stream.IntStream;
@@ -21,9 +16,6 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -42,27 +34,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * 2022/02/06       rovert         최초 생성
  */
 
-class EventControllerTest extends BaseControllerTest {
+public class EventControllerTest extends BaseControllerTest {
 
     @Autowired
     private EventRepository eventRepository;
 
-    @BeforeEach
-    protected void setup(RestDocumentationContextProvider restDocumentationContextProvider) {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-                .addFilter(new CharacterEncodingFilter("UTF-8", true)) // 필터 추가
-                .apply(documentationConfiguration(restDocumentationContextProvider)
-                        .operationPreprocessors()
-                        .withRequestDefaults(modifyUris().host("sungbin.me").removePort(), prettyPrint())
-                        .withResponseDefaults(modifyUris().host("sungbin.me").removePort(), prettyPrint()))
-                .alwaysDo(print())
-                .build();
-    }
-
     @Test
-    @DisplayName("이벤트 생성")
     @TestDescription("정상적으로 이벤트를 생성하는 테스트")
-    void createEvent() throws Exception {
+    public void createEvent() throws Exception {
         EventDto event = EventDto.builder()
                 .name("Spring")
                 .description("REST API Development with Spring")
@@ -77,8 +56,8 @@ class EventControllerTest extends BaseControllerTest {
                 .build();
 
         mockMvc.perform(post("/api/events")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaTypes.HAL_JSON)
+                        .contentType(MediaType.APPLICATION_JSON+ ";charset=UTF-8")
+                        .accept(MediaTypes.HAL_JSON + ";charset=UTF-8")
                         .content(objectMapper.writeValueAsString(event)))
                 .andDo(print())
                 .andExpect(status().isCreated())
@@ -134,7 +113,7 @@ class EventControllerTest extends BaseControllerTest {
                                 fieldWithPath("offLine").description("it tells if this event is offLine event or not"),
                                 fieldWithPath("free").description("it tells if this event is free or not"),
                                 fieldWithPath("eventStatus").description("event status"),
-                                fieldWithPath("manager").description("manager of new event"),
+//                                fieldWithPath("manager").description("manager of new event"),
                                 fieldWithPath("_links.self.href").description("link to self"),
                                 fieldWithPath("_links.query-events.href").description("link to query event list"),
                                 fieldWithPath("_links.update-event.href").description("link to update existing event"),
@@ -144,9 +123,8 @@ class EventControllerTest extends BaseControllerTest {
     }
 
     @Test
-    @DisplayName("이벤트 생성 시, bad request 응답")
     @TestDescription("입력받을 수 없는 값을 사용한 경우에 에러가 발생하는 테스트")
-    void createEvent_bad_request() throws Exception {
+    public void createEvent_bad_request() throws Exception {
         Event event = Event.builder()
                 .id(100)
                 .name("Spring")
@@ -173,22 +151,19 @@ class EventControllerTest extends BaseControllerTest {
     }
 
     @Test
-    @DisplayName("이벤트 생성 시, 입력값이 비어있어서 bad request 응답 처리")
     @TestDescription("입력 값이 비어있는 경우에 에러가 발생하는 테스트")
-    void createEvent_BadRequest_Empty_Input() throws Exception {
+    public void createEvent_BadRequest_Empty_Input() throws Exception {
         EventDto eventDto = EventDto.builder().build();
 
         this.mockMvc.perform(post("/api/events")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaTypes.HAL_JSON)
+                        .contentType(MediaType.APPLICATION_JSON + ";charset=UTF-8")
                         .content(this.objectMapper.writeValueAsString(eventDto)))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    @DisplayName("이벤트 생성 시, 입력값 오류로 bad request 응답 처리")
     @TestDescription("입력 값이 잘못 된 경우에 에러가 발생하는 테스트")
-    void createEvent_BadRequest_Wrong_Input() throws Exception {
+    public void createEvent_BadRequest_Wrong_Input() throws Exception {
         EventDto eventDto = EventDto.builder()
                 .name("Spring")
                 .description("REST API Development with Spring")
@@ -203,21 +178,19 @@ class EventControllerTest extends BaseControllerTest {
                 .build();
 
         this.mockMvc.perform(post("/api/events")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaTypes.HAL_JSON)
+                        .contentType(MediaType.APPLICATION_JSON + ";charset=UTF-8")
                         .content(this.objectMapper.writeValueAsString(eventDto)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("errors[0].objectName").exists())
-                .andExpect(jsonPath("errors[0].defaultMessage").exists())
-                .andExpect(jsonPath("errors[0].codes").exists())
+                .andExpect(jsonPath("content[0].objectName").exists())
+                .andExpect(jsonPath("content[0].defaultMessage").exists())
+                .andExpect(jsonPath("content[0].codes").exists())
                 .andExpect(jsonPath("_links.index").exists());
     }
 
     @Test
-    @DisplayName("30개의 이벤트를 10개씩 두번째 페이지 조회하기")
     @TestDescription("30개의 이벤트를 10개씩 두번째 페이지 조회하기")
-    void queryEvents() throws Exception {
+    public void queryEvents() throws Exception {
         // given
         IntStream.range(0, 30).forEach(this::generateEvent);
 
@@ -269,7 +242,7 @@ class EventControllerTest extends BaseControllerTest {
                                 fieldWithPath("_embedded.eventList[0].offLine").description("it tells if this event is offLine event or not"),
                                 fieldWithPath("_embedded.eventList[0].free").description("it tells if this event is free or not"),
                                 fieldWithPath("_embedded.eventList[0].eventStatus").description("event status"),
-                                fieldWithPath("_embedded.eventList[0]manager").description("manager of new event"),
+//                                fieldWithPath("_embedded.eventList[0]manager").description("manager of new event"),
                                 fieldWithPath("_embedded.eventList[0]._links.self.href").description("each event link"),
                                 fieldWithPath("_links.first.href").description("link to first"),
                                 fieldWithPath("_links.self.href").description("link to self"),
@@ -286,9 +259,8 @@ class EventControllerTest extends BaseControllerTest {
     }
 
     @Test
-    @DisplayName("기존에 이벤트를 하나 조회하기")
     @TestDescription("기존에 이벤트를 하나 조회하기")
-    void getEvent() throws Exception {
+    public void getEvent() throws Exception {
         // Given
         Event event = this.generateEvent(100);
 
@@ -322,7 +294,7 @@ class EventControllerTest extends BaseControllerTest {
                                 fieldWithPath("limitOfEnrollment").description("limitOfEnrollment of new event"),
                                 fieldWithPath("offLine").description("it tells if this event is offLine event or not"),
                                 fieldWithPath("free").description("it tells if this event is free or not"),
-                                fieldWithPath("manager").description("manager of new event"),
+//                                fieldWithPath("manager").description("manager of new event"),
                                 fieldWithPath("eventStatus").description("event status"),
                                 fieldWithPath("_links.self.href").description("each event link"),
                                 fieldWithPath("_links.profile.href").description("each api document event link")
@@ -331,9 +303,8 @@ class EventControllerTest extends BaseControllerTest {
     }
 
     @Test
-    @DisplayName("없는 이벤트를 조회했을 때 404응답 받기")
     @TestDescription("없는 이벤트를 조회했을 때 404응답 받기")
-    void getEvent404() throws Exception {
+    public void getEvent404() throws Exception {
         // Given
         int noneExistingId = 1;
 
@@ -349,9 +320,8 @@ class EventControllerTest extends BaseControllerTest {
     }
 
     @Test
-    @DisplayName("이벤트를 정상적으로 수정하기")
     @TestDescription("이벤트를 정상적으로 수정하기")
-    void updateEvent() throws Exception {
+    public void updateEvent() throws Exception {
         // given
         Event event = this.generateEvent(200);
         String eventName = "Update Event";
@@ -399,7 +369,7 @@ class EventControllerTest extends BaseControllerTest {
                                 fieldWithPath("limitOfEnrollment").description("limitOfEnrollment of new event"),
                                 fieldWithPath("offLine").description("it tells if this event is offLine event or not"),
                                 fieldWithPath("free").description("it tells if this event is free or not"),
-                                fieldWithPath("manager").description("manager of new event"),
+//                                fieldWithPath("manager").description("manager of new event"),
                                 fieldWithPath("eventStatus").description("event status"),
                                 fieldWithPath("_links.self.href").description("each event link"),
                                 fieldWithPath("_links.profile.href").description("each api document event link")
@@ -408,12 +378,13 @@ class EventControllerTest extends BaseControllerTest {
     }
 
     @Test
-    @DisplayName("입력 값이 비어있는 경우에 이벤트 수정 실패")
     @TestDescription("입력 값이 비어있는 경우에 이벤트 수정 실패")
-    void updateEvent_400_empty() throws Exception {
+    public void updateEvent_400_empty() throws Exception {
         // given
         Event event = this.generateEvent(200);
         EventDto eventDto = new EventDto();
+
+        System.out.println(eventDto);
 
         // when & then
         this.mockMvc.perform(put("/api/events/{id}", event.getId())
@@ -424,9 +395,8 @@ class EventControllerTest extends BaseControllerTest {
     }
 
     @Test
-    @DisplayName("입력 값이 잘못된 경우에 이벤트 수정 실패")
     @TestDescription("입력 값이 잘못된 경우에 이벤트 수정 실패")
-    void updateEvent_400_wrong() throws Exception {
+    public void updateEvent_400_wrong() throws Exception {
         // given
         Event event = this.generateEvent(200);
         EventDto eventDto = this.modelMapper.map(event, EventDto.class);
@@ -442,9 +412,8 @@ class EventControllerTest extends BaseControllerTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 이벤트 수정 실패")
     @TestDescription("존재하지 않는 이벤트 수정 실패")
-    void updateEvent_404() throws Exception {
+    public void updateEvent_404() throws Exception {
         // given
         Event event = this.generateEvent(200);
         EventDto eventDto = this.modelMapper.map(event, EventDto.class);
