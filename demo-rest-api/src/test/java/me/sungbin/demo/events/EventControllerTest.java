@@ -15,7 +15,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.common.util.Jackson2JsonParser;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -142,9 +141,6 @@ public class EventControllerTest extends BaseControllerTest {
                                 fieldWithPath("free").description("it tells if this event is free or not"),
                                 fieldWithPath("eventStatus").description("event status"),
                                 fieldWithPath("manager.id").description("manager id of new event"),
-                                fieldWithPath("manager.email").description("manager email of new Event"),
-                                fieldWithPath("manager.password").description("manager password of new Event"),
-                                fieldWithPath("manager.roles").description("manager roles of new Event"),
                                 fieldWithPath("_links.self.href").description("link to self"),
                                 fieldWithPath("_links.query-events.href").description("link to query event list"),
                                 fieldWithPath("_links.update-event.href").description("link to update existing event"),
