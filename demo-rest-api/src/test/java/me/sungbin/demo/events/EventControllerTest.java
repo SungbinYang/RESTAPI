@@ -4,6 +4,7 @@ import me.sungbin.demo.accounts.Account;
 import me.sungbin.demo.accounts.AccountRepository;
 import me.sungbin.demo.accounts.AccountRole;
 import me.sungbin.demo.accounts.AccountService;
+import me.sungbin.demo.common.AppProperties;
 import me.sungbin.demo.common.BaseControllerTest;
 import me.sungbin.demo.common.TestDescription;
 import org.junit.Before;
@@ -54,6 +55,9 @@ public class EventControllerTest extends BaseControllerTest {
 
     @Autowired
     private AccountService accountService;
+
+    @Autowired
+    private AppProperties appProperties;
 
     @Before
     public void setUp() {
@@ -151,24 +155,18 @@ public class EventControllerTest extends BaseControllerTest {
 
     private String getAccessToken() throws Exception {
         //Given
-        String username = "sungbin@email.com";
-        String password = "sungbin";
-
         Account sungbin = Account.builder()
-                .email(username)
-                .password(password)
+                .email(appProperties.getUserUsername())
+                .password(appProperties.getUserPassword())
                 .roles(Set.of(AccountRole.ADMIN, AccountRole.USER))
                 .build();
 
         this.accountService.saveAccount(sungbin);
 
-        String clientId = "myApp";
-        String clientSecret = "pass";
-
         ResultActions perform = this.mockMvc.perform(post("/oauth/token")
-                .with(httpBasic(clientId, clientSecret))
-                .param("username", username)
-                .param("password", password)
+                .with(httpBasic(appProperties.getClientId(), appProperties.getClientSecret()))
+                .param("username", appProperties.getUserUsername())
+                .param("password", appProperties.getUserPassword())
                 .param("grant_type", "password"));
         MockHttpServletResponse response = perform.andReturn().getResponse();
         String responseBody = response.getContentAsString();

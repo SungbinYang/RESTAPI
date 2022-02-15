@@ -3,6 +3,7 @@ package me.sungbin.demo.config;
 import me.sungbin.demo.accounts.Account;
 import me.sungbin.demo.accounts.AccountRole;
 import me.sungbin.demo.accounts.AccountService;
+import me.sungbin.demo.common.AppProperties;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -41,22 +42,33 @@ public class AppConfig {
     }
 
     @Bean
-    @Profile("prod")
     public ApplicationRunner applicationRunner() {
         return new ApplicationRunner() {
 
             @Autowired
             AccountService accountService;
 
+            @Autowired
+            AppProperties appProperties;
+
             @Override
             public void run(ApplicationArguments args) throws Exception {
-                Account sungbin = Account.builder()
-                        .email("sungbin@email.com")
-                        .password("sungbin")
+
+                Account admin = Account.builder()
+                        .email(appProperties.getAdminUsername())
+                        .password(appProperties.getAdminPassword())
                         .roles(Set.of(AccountRole.ADMIN, AccountRole.USER))
                         .build();
 
-                accountService.saveAccount(sungbin);
+                accountService.saveAccount(admin);
+
+                Account user = Account.builder()
+                        .email(appProperties.getUserUsername())
+                        .password(appProperties.getUserPassword())
+                        .roles(Set.of(AccountRole.USER))
+                        .build();
+
+                accountService.saveAccount(user);
             }
         };
     }

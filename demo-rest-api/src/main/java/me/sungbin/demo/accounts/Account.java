@@ -29,6 +29,7 @@ public class Account {
     @Id @GeneratedValue
     private Integer id;
 
+    @Column(unique = true)
     private String email;
 
     private String password;

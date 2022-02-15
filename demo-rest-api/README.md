@@ -856,3 +856,11 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.H2Dialect
     * PUT /api/**: authenticated
     * 에러 처리
       * accessDeniedHandler(OAuth2AccessDeniedHandler())
+  
+## 문자열을 외부 설정으로 빼내기
+- 기본 유저 만들기
+  * ApplicationRunner
+    * Admin
+    * User
+- 외부 설정으로 기본 유저와 클라이언트 정보 빼내기
+  * @ConfigurationProperties
