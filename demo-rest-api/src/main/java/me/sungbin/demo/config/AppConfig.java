@@ -52,7 +52,7 @@ public class AppConfig {
             AppProperties appProperties;
 
             @Override
-            public void run(ApplicationArguments args) throws Exception {
+            public void run(ApplicationArguments args) {
 
                 Account admin = Account.builder()
                         .email(appProperties.getAdminUsername())

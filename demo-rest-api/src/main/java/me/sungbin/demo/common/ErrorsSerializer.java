@@ -25,9 +25,11 @@ public class ErrorsSerializer extends JsonSerializer<BindingResult> {
 
     @Override
     public void serialize(BindingResult bindingResult, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+        jsonGenerator.writeFieldName("errors");
         jsonGenerator.writeStartArray();
         bindingResult.getFieldErrors().forEach(e -> {
             try {
+                jsonGenerator.writeFieldName("errors");
                 jsonGenerator.writeStartObject();
                 jsonGenerator.writeStringField("field", e.getField());
                 jsonGenerator.writeStringField("objectName", e.getObjectName());

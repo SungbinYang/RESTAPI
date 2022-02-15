@@ -1,24 +1,18 @@
 package me.sungbin.demo.accounts;
 
-import me.sungbin.demo.common.TestDescription;
-import org.hamcrest.Matchers;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import me.sungbin.demo.common.BaseControllerTest;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Set;
 
-import static org.junit.Assert.*;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * packageName : me.sungbin.demo.accounts
@@ -32,10 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * 2022/02/14       rovert         최초 생성
  */
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@ActiveProfiles("test")
-public class AccountServiceTest {
+class AccountServiceTest extends BaseControllerTest {
 
     @Autowired
     private AccountService accountService;
@@ -43,12 +34,9 @@ public class AccountServiceTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
-
     @Test
-    @TestDescription("아이디를 찾는 테스트")
-    public void findByUsername() {
+    @DisplayName("아이디를 찾는 테스트")
+    void findByUsername() {
         // Given
         String username = "sungbin@email.com";
         String password = "sungbin";
@@ -70,15 +58,12 @@ public class AccountServiceTest {
     }
 
     @Test
-    @TestDescription("아이디를 불러오다가 실패")
-    public void findByUsernameFail() {
+    @DisplayName("아이디를 불러오다가 실패")
+    void findByUsernameFail() {
+        // Expected :: 이 부분을 먼저 예측을 해야한다.
         String username = "random@email.com";
 
-        // Expected :: 이 부분을 먼저 예측을 해야한다.
-        expectedException.expect(UsernameNotFoundException.class);
-        expectedException.expectMessage(Matchers.containsString(username));
-
         // When
-        this.accountService.loadUserByUsername(username);
+        assertThrows(UsernameNotFoundException.class, () -> this.accountService.loadUserByUsername(username));
     }
 }

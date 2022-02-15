@@ -9,10 +9,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.MediaTypes;
-import org.springframework.hateoas.PagedResources;
-import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.mvc.ControllerLinkBuilder;
+import org.springframework.hateoas.PagedModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -22,7 +22,7 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.Optional;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 /**
  * packageName : me.sungbin.demo.events
@@ -64,7 +64,7 @@ public class EventController {
         event.update();
         event.setManager(account);
         Event newEvent = this.eventRepository.save(event);
-        ControllerLinkBuilder selfLinkBuilder = linkTo(EventController.class).slash(newEvent.getId());
+        WebMvcLinkBuilder selfLinkBuilder = linkTo(EventController.class).slash(newEvent.getId());
         URI createdUri = selfLinkBuilder.toUri();
 
         EventResource eventResource = new EventResource(event);
@@ -77,7 +77,7 @@ public class EventController {
     @GetMapping
     public ResponseEntity queryEvents(Pageable pageable, PagedResourcesAssembler<Event> assembler, @CurrentUser Account account) {
         Page<Event> page = this.eventRepository.findAll(pageable);
-        PagedResources<Resource<Event>> pagedResources = assembler.toResource(page, entity -> new EventResource(entity));
+        PagedModel<EntityModel<Event>> pagedResources = assembler.toModel(page, entity -> new EventResource(entity));
 
         pagedResources.add(linkTo(App.class).slash("docs/index.html#resources-query-events-list").withRel("profile"));
 
@@ -141,7 +141,7 @@ public class EventController {
         return ResponseEntity.ok(eventResource);
     }
 
-    private ResponseEntity<ErrorsResource> badRequest(BindingResult bindingResult) {
-        return ResponseEntity.badRequest().body(new ErrorsResource(bindingResult));
+    private ResponseEntity badRequest(BindingResult bindingResult) {
+        return ResponseEntity.badRequest().body(ErrorsResource.modelOf(bindingResult));
     }
 }
