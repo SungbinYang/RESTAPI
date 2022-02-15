@@ -15,6 +15,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.common.util.Jackson2JsonParser;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -140,7 +141,10 @@ public class EventControllerTest extends BaseControllerTest {
                                 fieldWithPath("offLine").description("it tells if this event is offLine event or not"),
                                 fieldWithPath("free").description("it tells if this event is free or not"),
                                 fieldWithPath("eventStatus").description("event status"),
-                                fieldWithPath("manager").description("manager of new event"),
+                                fieldWithPath("manager.id").description("manager id of new event"),
+                                fieldWithPath("manager.email").description("manager email of new Event"),
+                                fieldWithPath("manager.password").description("manager password of new Event"),
+                                fieldWithPath("manager.roles").description("manager roles of new Event"),
                                 fieldWithPath("_links.self.href").description("link to self"),
                                 fieldWithPath("_links.query-events.href").description("link to query event list"),
                                 fieldWithPath("_links.update-event.href").description("link to update existing event"),
@@ -305,6 +309,80 @@ public class EventControllerTest extends BaseControllerTest {
                                 fieldWithPath("_links.next.href").description("link to next"),
                                 fieldWithPath("_links.last.href").description("link to last"),
                                 fieldWithPath("_links.profile.href").description("link to api document"),
+                                fieldWithPath("page.number").description("The number of this page."),
+                                fieldWithPath("page.size").description("The size of this page."),
+                                fieldWithPath("page.totalPages").description("The total number of pages."),
+                                fieldWithPath("page.totalElements").description("The total number of results.")
+                        )
+                ));
+    }
+
+    @Test
+    @TestDescription("30개의 이벤트를 10개씩 두번째 페이지 조회하기 + 인증정보 추가")
+    public void queryEventsWithAuthentication() throws Exception {
+        // given
+        IntStream.range(0, 30).forEach(this::generateEvent);
+
+        // when
+        this.mockMvc.perform(get("/api/events")
+                        .header(HttpHeaders.AUTHORIZATION, getBearerToken())
+                        .param("page", "1")
+                        .param("size", "10")
+                        .param("sort", "name,DESC"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("page").exists())
+                .andExpect(jsonPath("_embedded.eventList[0]._links.self").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.first").exists())
+                .andExpect(jsonPath("_links.prev").exists())
+                .andExpect(jsonPath("_links.next").exists())
+                .andExpect(jsonPath("_links.last").exists())
+                .andExpect(jsonPath("_links.profile").exists())
+                .andExpect(jsonPath("_links.create-event").exists())
+                .andExpect(jsonPath("page.size").exists())
+                .andExpect(jsonPath("page.totalElements").exists())
+                .andExpect(jsonPath("page.totalPages").exists())
+                .andExpect(jsonPath("page.number").exists())
+                .andDo(document("query-events",
+                        links(
+                                linkWithRel("profile").description("Link to profile"),
+                                linkWithRel("self").description("Link to self"),
+                                linkWithRel("first").description("Link to get an event"),
+                                linkWithRel("next").description("Link to next page"),
+                                linkWithRel("last").description("Link to last page"),
+                                linkWithRel("prev").description("Link to prev page"),
+                                linkWithRel("create-event").description("when user login, user create event")
+                        ),
+                        requestParameters(
+                                parameterWithName("page").description("page to retrieve, begin with and default is 0").optional(),
+                                parameterWithName("size").description("Size of the page to retrieve, default 10").optional(),
+                                parameterWithName("sort").description("How to sort elements by some criteria").optional()
+                        ),
+                        responseFields(
+                                fieldWithPath("_embedded.eventList[0].id").description("identifier of new event"),
+                                fieldWithPath("_embedded.eventList[0].name").description("name of new event"),
+                                fieldWithPath("_embedded.eventList[0].description").description("description of new event"),
+                                fieldWithPath("_embedded.eventList[0].beginEnrollmentDateTime").description("date time of begin of new event"),
+                                fieldWithPath("_embedded.eventList[0].closeEnrollmentDateTime").description("date time of close of new event"),
+                                fieldWithPath("_embedded.eventList[0].beginEventDateTime").description("date time of start of new event"),
+                                fieldWithPath("_embedded.eventList[0].endEventDateTime").description("date time of end of new event"),
+                                fieldWithPath("_embedded.eventList[0].location").description("location of new event"),
+                                fieldWithPath("_embedded.eventList[0].basePrice").description("basePrice of new event"),
+                                fieldWithPath("_embedded.eventList[0].maxPrice").description("maxPrice of new event"),
+                                fieldWithPath("_embedded.eventList[0].limitOfEnrollment").description("limitOfEnrollment of new event"),
+                                fieldWithPath("_embedded.eventList[0].offLine").description("it tells if this event is offLine event or not"),
+                                fieldWithPath("_embedded.eventList[0].free").description("it tells if this event is free or not"),
+                                fieldWithPath("_embedded.eventList[0].eventStatus").description("event status"),
+                                fieldWithPath("_embedded.eventList[0]manager").description("manager of new event"),
+                                fieldWithPath("_embedded.eventList[0]._links.self.href").description("each event link"),
+                                fieldWithPath("_links.first.href").description("link to first"),
+                                fieldWithPath("_links.self.href").description("link to self"),
+                                fieldWithPath("_links.prev.href").description("link to prev"),
+                                fieldWithPath("_links.next.href").description("link to next"),
+                                fieldWithPath("_links.last.href").description("link to last"),
+                                fieldWithPath("_links.profile.href").description("link to api document"),
+                                fieldWithPath("_links.create-event.href").description("when user login, user create event link"),
                                 fieldWithPath("page.number").description("The number of this page."),
                                 fieldWithPath("page.size").description("The size of this page."),
                                 fieldWithPath("page.totalPages").description("The total number of pages."),
